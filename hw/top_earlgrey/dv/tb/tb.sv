@@ -284,6 +284,13 @@ module tb;
         csr_seq_type == "mem_walk") begin
       force tb.dut.top_earlgrey.u_otp_ctrl.lc_dft_en_i = 4'b1010;
     end
+
+    // force lc_keymgr_en_i to On, otherwise, many CSR in keymgr can't be written
+    // The other approach is to configure LC to enable certain states, but it affects LC CSR tests
+    // TODO choose force for now
+    if (csr_seq_type != "") begin
+      force tb.dut.top_earlgrey.u_keymgr.lc_keymgr_en_i = lc_ctrl_pkg::On;
+    end
   end
 
   // Control assertions in the DUT with UVM resource string "dut_assert_en".

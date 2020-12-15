@@ -3806,15 +3806,6 @@
           index: -1
         }
         {
-          struct: lc_data
-          type: uni
-          name: lc
-          act: rcv
-          package: keymgr_pkg
-          inst_name: keymgr
-          index: -1
-        }
-        {
           struct: otp_keymgr_key
           type: uni
           name: otp_key
@@ -3845,6 +3836,30 @@
           width: 1
           default: ""
           top_signame: flash_ctrl_keymgr
+          index: -1
+        }
+        {
+          struct: lc_tx
+          type: uni
+          name: lc_keymgr_en
+          act: rcv
+          package: lc_ctrl_pkg
+          inst_name: keymgr
+          width: 1
+          default: ""
+          top_signame: lc_ctrl_lc_keymgr_en
+          index: -1
+        }
+        {
+          struct: lc_keymgr_div
+          type: uni
+          name: lc_keymgr_div
+          act: rcv
+          package: lc_ctrl_pkg
+          inst_name: keymgr
+          width: 1
+          default: ""
+          top_signame: lc_ctrl_lc_keymgr_div
           index: -1
         }
         {
@@ -5076,7 +5091,10 @@
       [
         lc_ctrl.otp_hw_cfg
       ]
-      lc_ctrl.lc_keymgr_div: []
+      lc_ctrl.lc_keymgr_div:
+      [
+        keymgr.lc_keymgr_div
+      ]
       lc_ctrl.lc_dft_en:
       [
         otp_ctrl.lc_dft_en
@@ -5085,7 +5103,10 @@
       lc_ctrl.lc_nvm_debug_en: []
       lc_ctrl.lc_hw_debug_en: []
       lc_ctrl.lc_cpu_en: []
-      lc_ctrl.lc_keymgr_en: []
+      lc_ctrl.lc_keymgr_en:
+      [
+        keymgr.lc_keymgr_en
+      ]
       lc_ctrl.lc_escalate_en:
       [
         otp_ctrl.lc_escalate_en
@@ -9220,15 +9241,6 @@
         index: -1
       }
       {
-        struct: lc_data
-        type: uni
-        name: lc
-        act: rcv
-        package: keymgr_pkg
-        inst_name: keymgr
-        index: -1
-      }
-      {
         struct: otp_keymgr_key
         type: uni
         name: otp_key
@@ -9259,6 +9271,30 @@
         width: 1
         default: ""
         top_signame: flash_ctrl_keymgr
+        index: -1
+      }
+      {
+        struct: lc_tx
+        type: uni
+        name: lc_keymgr_en
+        act: rcv
+        package: lc_ctrl_pkg
+        inst_name: keymgr
+        width: 1
+        default: ""
+        top_signame: lc_ctrl_lc_keymgr_en
+        index: -1
+      }
+      {
+        struct: lc_keymgr_div
+        type: uni
+        name: lc_keymgr_div
+        act: rcv
+        package: lc_ctrl_pkg
+        inst_name: keymgr
+        width: 1
+        default: ""
+        top_signame: lc_ctrl_lc_keymgr_div
         index: -1
       }
       {

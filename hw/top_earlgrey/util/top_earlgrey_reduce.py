@@ -57,7 +57,7 @@ def _nexysvideo_reduce(cfg):
 
     for mem in cfg["memory"]:
         if mem['name'] == 'eflash':
-            mem['pages_per_bank'] = 64
+            mem['pages_per_bank'] = 128
         if mem['name'] == 'ram_main':
             mem['size'] = '0x10000'
 

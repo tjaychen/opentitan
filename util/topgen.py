@@ -287,6 +287,7 @@ def generate_plic(top, out_path):
     with rtl_gen_path.open(mode='w', encoding='UTF-8') as fout:
         fout.write(genhdr + gencmd + out)
 
+
 # returns the dedicated pin positions of a particular module
 # For example, if a module is connected to 6:1 of the dio connections,
 # [6, 1] will be returned.
@@ -311,6 +312,7 @@ def _calc_dio_pin_pos(top, mname):
 
     log.debug("bit pos {}".format(bit_pos))
     return bit_pos
+
 
 def _find_dio_pin_pos(top, sname):
     dios = top["pinmux"]["dio"]

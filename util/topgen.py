@@ -318,13 +318,13 @@ def _find_dio_pin_pos(top, sname):
     dios = top["pinmux"]["dio"]
 
     last_index = dios.index(dios[-1])
-    bit_pos = False
+    bit_pos = -1
 
     for dio in dios:
         if dio['name'] == sname:
             bit_pos = last_index - dios.index(dio)
 
-    if not bit_pos:
+    if bit_pos < 0:
         log.error("Could not find bit position of {} in dios".format(sname))
 
     return bit_pos

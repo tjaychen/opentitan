@@ -222,10 +222,10 @@ module top_englishbreakfast_cw305 #(
   ast_pkg::ast_alert_req_t ast_base_alerts;
   ast_pkg::ast_status_t ast_base_status;
 
-  assign ast_base_pwr.slow_clk_val = pwrmgr_pkg::DiffValid;
-  assign ast_base_pwr.core_clk_val = pwrmgr_pkg::DiffValid;
-  assign ast_base_pwr.io_clk_val   = pwrmgr_pkg::DiffValid;
-  assign ast_base_pwr.usb_clk_val  = pwrmgr_pkg::DiffValid;
+  assign ast_base_pwr.slow_clk_val = 1'b1;
+  assign ast_base_pwr.core_clk_val = 1'b1;
+  assign ast_base_pwr.io_clk_val   = 1'b1;
+  assign ast_base_pwr.usb_clk_val  = 1'b1;
   assign ast_base_pwr.main_pok     = 1'b1;
 
   ast_pkg::ast_dif_t silent_alert = '{

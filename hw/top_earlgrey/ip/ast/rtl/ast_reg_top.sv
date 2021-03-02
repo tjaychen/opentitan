@@ -267,19 +267,19 @@ module ast_reg_top (
     if (addr_hit[1] && reg_we && (AST_PERMIT[1] != (AST_PERMIT[1] & reg_be))) wr_err = 1'b1 ;
   end
 
-  assign rwtype0_we = addr_hit[0] & reg_we & ~wr_err;
+  assign rwtype0_we = addr_hit[0] & reg_we & !reg_error;
   assign rwtype0_wd = reg_wdata[31:0];
 
-  assign rwtype1_field0_we = addr_hit[1] & reg_we & ~wr_err;
+  assign rwtype1_field0_we = addr_hit[1] & reg_we & !reg_error;
   assign rwtype1_field0_wd = reg_wdata[0];
 
-  assign rwtype1_field1_we = addr_hit[1] & reg_we & ~wr_err;
+  assign rwtype1_field1_we = addr_hit[1] & reg_we & !reg_error;
   assign rwtype1_field1_wd = reg_wdata[1];
 
-  assign rwtype1_field4_we = addr_hit[1] & reg_we & ~wr_err;
+  assign rwtype1_field4_we = addr_hit[1] & reg_we & !reg_error;
   assign rwtype1_field4_wd = reg_wdata[4];
 
-  assign rwtype1_field15_8_we = addr_hit[1] & reg_we & ~wr_err;
+  assign rwtype1_field15_8_we = addr_hit[1] & reg_we & !reg_error;
   assign rwtype1_field15_8_wd = reg_wdata[15:8];
 
   // Read data return

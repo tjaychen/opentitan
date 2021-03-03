@@ -770,6 +770,7 @@ module top_earlgrey #(
   logic        ram_main_req;
   logic        ram_main_gnt;
   logic        ram_main_we;
+  logic        ram_main_intg_err;
   logic [14:0] ram_main_addr;
   logic [38:0] ram_main_wdata;
   logic [38:0] ram_main_wmask;
@@ -793,6 +794,7 @@ module top_earlgrey #(
     .addr_o      (ram_main_addr),
     .wdata_o     (ram_main_wdata),
     .wmask_o     (ram_main_wmask),
+    .intg_error_o(ram_main_intg_err),
     .rdata_i     (ram_main_rdata[31:0]),
     .rvalid_i    (ram_main_rvalid),
     .rerror_i    (ram_main_rerror)
@@ -811,17 +813,18 @@ module top_earlgrey #(
     .key_i       ( sram_ctrl_main_sram_scr_req.key   ),
     .nonce_i     ( sram_ctrl_main_sram_scr_req.nonce ),
 
-    .req_i    (ram_main_req),
-    .gnt_o    (ram_main_gnt),
-    .write_i  (ram_main_we),
-    .addr_i   (ram_main_addr),
-    .wdata_i  (39'(ram_main_wdata)),
-    .wmask_i  (39'(ram_main_wmask)),
-    .rdata_o  (ram_main_rdata),
-    .rvalid_o (ram_main_rvalid),
-    .rerror_o (ram_main_rerror),
-    .raddr_o  ( sram_ctrl_main_sram_scr_rsp.raddr ),
-    .cfg_i    ( '0 )
+    .req_i       (ram_main_req),
+    .intg_error_i(ram_main_intg_err),
+    .gnt_o       (ram_main_gnt),
+    .write_i     (ram_main_we),
+    .addr_i      (ram_main_addr),
+    .wdata_i     (39'(ram_main_wdata)),
+    .wmask_i     (39'(ram_main_wmask)),
+    .rdata_o     (ram_main_rdata),
+    .rvalid_o    (ram_main_rvalid),
+    .rerror_o    (ram_main_rerror),
+    .raddr_o     ( sram_ctrl_main_sram_scr_rsp.raddr ),
+    .cfg_i       ( '0 )
   );
 
   assign sram_ctrl_main_sram_scr_rsp.rerror = ram_main_rerror;
@@ -830,6 +833,7 @@ module top_earlgrey #(
   logic        ram_ret_aon_req;
   logic        ram_ret_aon_gnt;
   logic        ram_ret_aon_we;
+  logic        ram_ret_aon_intg_err;
   logic [9:0] ram_ret_aon_addr;
   logic [38:0] ram_ret_aon_wdata;
   logic [38:0] ram_ret_aon_wmask;
@@ -853,6 +857,7 @@ module top_earlgrey #(
     .addr_o      (ram_ret_aon_addr),
     .wdata_o     (ram_ret_aon_wdata),
     .wmask_o     (ram_ret_aon_wmask),
+    .intg_error_o(ram_ret_aon_intg_err),
     .rdata_i     (ram_ret_aon_rdata[31:0]),
     .rvalid_i    (ram_ret_aon_rvalid),
     .rerror_i    (ram_ret_aon_rerror)
@@ -871,17 +876,18 @@ module top_earlgrey #(
     .key_i       ( sram_ctrl_ret_aon_sram_scr_req.key   ),
     .nonce_i     ( sram_ctrl_ret_aon_sram_scr_req.nonce ),
 
-    .req_i    (ram_ret_aon_req),
-    .gnt_o    (ram_ret_aon_gnt),
-    .write_i  (ram_ret_aon_we),
-    .addr_i   (ram_ret_aon_addr),
-    .wdata_i  (39'(ram_ret_aon_wdata)),
-    .wmask_i  (39'(ram_ret_aon_wmask)),
-    .rdata_o  (ram_ret_aon_rdata),
-    .rvalid_o (ram_ret_aon_rvalid),
-    .rerror_o (ram_ret_aon_rerror),
-    .raddr_o  ( sram_ctrl_ret_aon_sram_scr_rsp.raddr ),
-    .cfg_i    ( '0 )
+    .req_i       (ram_ret_aon_req),
+    .intg_error_i(ram_ret_aon_intg_err),
+    .gnt_o       (ram_ret_aon_gnt),
+    .write_i     (ram_ret_aon_we),
+    .addr_i      (ram_ret_aon_addr),
+    .wdata_i     (39'(ram_ret_aon_wdata)),
+    .wmask_i     (39'(ram_ret_aon_wmask)),
+    .rdata_o     (ram_ret_aon_rdata),
+    .rvalid_o    (ram_ret_aon_rvalid),
+    .rerror_o    (ram_ret_aon_rerror),
+    .raddr_o     ( sram_ctrl_ret_aon_sram_scr_rsp.raddr ),
+    .cfg_i       ( '0 )
   );
 
   assign sram_ctrl_ret_aon_sram_scr_rsp.rerror = ram_ret_aon_rerror;

@@ -362,6 +362,7 @@ module top_${top["name"]} #(
   logic ${lib.bitarray(1,          max_char)} ${m["name"]}_req;
   logic ${lib.bitarray(1,          max_char)} ${m["name"]}_gnt;
   logic ${lib.bitarray(1,          max_char)} ${m["name"]}_we;
+  logic ${lib.bitarray(1,          max_char)} ${m["name"]}_intg_err;
   logic ${lib.bitarray(addr_width, max_char)} ${m["name"]}_addr;
   logic ${lib.bitarray(full_data_width, max_char)} ${m["name"]}_wdata;
   logic ${lib.bitarray(full_data_width, max_char)} ${m["name"]}_wmask;
@@ -389,6 +390,7 @@ module top_${top["name"]} #(
     .addr_o      (${m["name"]}_addr),
     .wdata_o     (${m["name"]}_wdata),
     .wmask_o     (${m["name"]}_wmask),
+    .intg_error_o(${m["name"]}_intg_err),
     .rdata_i     (${m["name"]}_rdata[${data_width-1}:0]),
     .rvalid_i    (${m["name"]}_rvalid),
     .rerror_i    (${m["name"]}_rerror)
@@ -411,17 +413,18 @@ module top_${top["name"]} #(
     .key_i       ( ${m["inter_signal_list"][1]["top_signame"]}_req.key   ),
     .nonce_i     ( ${m["inter_signal_list"][1]["top_signame"]}_req.nonce ),
 
-    .req_i    (${m["name"]}_req),
-    .gnt_o    (${m["name"]}_gnt),
-    .write_i  (${m["name"]}_we),
-    .addr_i   (${m["name"]}_addr),
-    .wdata_i  (${full_data_width}'(${m["name"]}_wdata)),
-    .wmask_i  (${full_data_width}'(${m["name"]}_wmask)),
-    .rdata_o  (${m["name"]}_rdata),
-    .rvalid_o (${m["name"]}_rvalid),
-    .rerror_o (${m["name"]}_rerror),
-    .raddr_o  ( ${m["inter_signal_list"][1]["top_signame"]}_rsp.raddr ),
-    .cfg_i    ( '0 )
+    .req_i       (${m["name"]}_req),
+    .intg_error_i(${m["name"]}_intg_err),
+    .gnt_o       (${m["name"]}_gnt),
+    .write_i     (${m["name"]}_we),
+    .addr_i      (${m["name"]}_addr),
+    .wdata_i     (${full_data_width}'(${m["name"]}_wdata)),
+    .wmask_i     (${full_data_width}'(${m["name"]}_wmask)),
+    .rdata_o     (${m["name"]}_rdata),
+    .rvalid_o    (${m["name"]}_rvalid),
+    .rerror_o    (${m["name"]}_rerror),
+    .raddr_o     ( ${m["inter_signal_list"][1]["top_signame"]}_rsp.raddr ),
+    .cfg_i       ( '0 )
   );
 
   assign ${m["inter_signal_list"][1]["top_signame"]}_rsp.rerror = ${m["name"]}_rerror;

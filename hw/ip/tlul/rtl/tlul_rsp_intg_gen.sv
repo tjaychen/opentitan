@@ -9,6 +9,7 @@
  */
 
 module tlul_rsp_intg_gen import tlul_pkg::*; #(
+  parameter bit EnableRspIntgGen = 1'b1,
   parameter bit EnableDataIntgGen = 1'b1
 ) (
   // TL-UL interface
@@ -16,15 +17,21 @@ module tlul_rsp_intg_gen import tlul_pkg::*; #(
   output tl_d2h_t tl_o
 );
 
-  tl_d2h_rsp_intg_t rsp;
-  logic [D2HRspMaxWidth-1:0] unused_payload;
   logic [D2HRspChkWidth-1:0] rsp_intg;
-  assign rsp = extract_d2h_rsp_intg(tl_i);
+  if(EnableRspIntgGen) begin : gen_rsp_intg
+    tl_d2h_rsp_intg_t rsp;
+    logic [D2HRspMaxWidth-1:0] unused_payload;
 
-  prim_secded_64_57_enc u_rsp_gen (
-    .in(D2HRspMaxWidth'(rsp)),
-    .out({rsp_intg, unused_payload})
-  );
+    assign rsp = extract_d2h_rsp_intg(tl_i);
+
+    prim_secded_64_57_enc u_rsp_gen (
+      .in(D2HRspMaxWidth'(rsp)),
+      .out({rsp_intg, unused_payload})
+    );
+  end else begin : gen_passthrough_rsp_intg
+    assign rsp_intg = tl_i.d_user.rsp_intg;
+  end
+
 
   logic [DataIntgWidth-1:0] data_intg;
   if (EnableDataIntgGen) begin : gen_data_intg

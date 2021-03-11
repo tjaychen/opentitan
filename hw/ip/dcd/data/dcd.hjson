@@ -13,16 +13,22 @@
   bus_interfaces: [
     { protocol: "tlul", direction: "device" }
   ],
-  //inter_signal_list: [
-  //  { struct: "adc_ast",
-  //    type: "req_rsp",
-  //    act: "req",
-  //    name: "adc",
-  //    package: "ast_wrapper_pkg",
-  //  }
-  //],
+  inter_signal_list: [
+    { struct: "adc_ast",
+      type: "req_rsp",
+      act: "req",
+      name: "adc",
+      package: "ast_pkg",
+    },
+    { struct: "logic",
+      type: "uni",
+      act: "req",
+      name: "debug_cable_wakeup",
+      package: "",
+    }
+  ],
   interrupt_list: [
-    { name: "debug_cable_update",
+    { name: "debug_cable",
       desc: "USB-C debug cable is attached or disconnected",
     }
   ],
@@ -138,13 +144,13 @@
         cname: "DCD",
         swaccess: "rw",
         hwaccess: "hro",
-        hwqe: "true",
+        hwqe: "true"
         resval: "0",
         fields: [
-          { bits: "1:0",
-	    name: "min_ext",
-	    desc: "2-bit extension; RO 0",
-	  }
+//          { bits: "1:0",
+//	    name: "min_ext",
+//	    desc: "2-bit extension; RO 0",
+//	  }
           { bits: "11:2",
 	    name: "min_v",
 	    desc: "10-bit for chn0 filter min value ",
@@ -153,10 +159,10 @@
 	    name: "cond",
 	    desc: "1-bit for the condition; 1'b0 means min<=ADC<=max, 1'b1 means ADC>max or ADC<min ",
 	  }
-          { bits: "17:16",
-	    name: "max_ext",
-	    desc: "2-bit extension; RO 0",
-	  }
+//          { bits: "17:16",
+//	    name: "max_ext",
+//	    desc: "2-bit extension; RO 0",
+//	  }
           { bits: "27:18",
 	    name: "max_v",
 	    desc: "10-bit for chn0 filter max value ",
@@ -181,10 +187,10 @@
         hwqe: "true",
         resval: "0",
         fields: [
-          { bits: "1:0",
-	    name: "min_ext",
-	    desc: "2-bit extension; RO 0",
-	  }
+//          { bits: "1:0",
+//	    name: "min_ext",
+//	    desc: "2-bit extension; RO 0",
+//	  }
           { bits: "11:2",
 	    name: "min_v",
 	    desc: "10-bit for chn0 filter min value ",
@@ -193,10 +199,10 @@
 	    name: "cond",
 	    desc: "1-bit for the condition; 1'b0 means min<=ADC<=max, 1'b1 means ADC>max or ADC<min ",
 	  }
-          { bits: "17:16",
-	    name: "max_ext",
-	    desc: "2-bit extension; RO 0",
-	  }
+//          { bits: "17:16",
+//	    name: "max_ext",
+//	    desc: "2-bit extension; RO 0",
+//	  }
           { bits: "27:18",
 	    name: "max_v",
 	    desc: "10-bit for chn0 filter max value ",

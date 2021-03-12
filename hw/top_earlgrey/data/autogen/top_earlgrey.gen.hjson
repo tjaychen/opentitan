@@ -2160,7 +2160,7 @@
           struct: logic
           type: uni
           act: rcv
-          width: 3
+          width: 4
           inst_name: pwrmgr_aon
           default: ""
           end_idx: -1
@@ -2532,6 +2532,77 @@
       }
     }
     {
+      name: adc_ctrl_aon
+      type: dcd
+      clock_srcs:
+      {
+        clk_i: io_div4
+        clk_aon_i: aon
+      }
+      clock_group: peri
+      reset_connections:
+      {
+        rst_ni: rstmgr_aon_resets.rst_sys_io_div4_n[rstmgr_pkg::DomainAonSel]
+        rst_slow_ni: rstmgr_aon_resets.rst_sys_aon_n[rstmgr_pkg::DomainAonSel]
+      }
+      clock_reset_export:
+      [
+        ast
+      ]
+      domain: Aon
+      clock_connections:
+      {
+        clk_i: clkmgr_aon_clocks.clk_io_div4_peri
+        clk_aon_i: clkmgr_aon_clocks.clk_aon_peri
+      }
+      param_list: []
+      inter_signal_list:
+      [
+        {
+          name: adc
+          struct: adc_ast
+          package: ast_pkg
+          type: req_rsp
+          act: req
+          width: 1
+          inst_name: adc_ctrl_aon
+          default: ""
+          external: true
+          top_signame: adc
+          index: -1
+        }
+        {
+          name: debug_cable_wakeup
+          struct: logic
+          type: uni
+          act: req
+          width: 1
+          inst_name: adc_ctrl_aon
+          default: ""
+          package: ""
+          top_signame: pwrmgr_aon_wakeups
+          index: 0
+        }
+        {
+          name: tl
+          struct: tl
+          package: tlul_pkg
+          type: req_rsp
+          act: rsp
+          width: 1
+          inst_name: adc_ctrl_aon
+          default: ""
+          end_idx: -1
+          top_signame: adc_ctrl_aon_tl
+          index: -1
+        }
+      ]
+      base_addrs:
+      {
+        null: 0x40440000
+      }
+    }
+    {
       name: pinmux_aon
       type: pinmux
       clock_srcs:
@@ -2672,7 +2743,7 @@
           inst_name: pinmux_aon
           package: ""
           top_signame: pwrmgr_aon_wakeups
-          index: 0
+          index: 1
         }
         {
           name: usb_wkup_req
@@ -2684,7 +2755,7 @@
           inst_name: pinmux_aon
           package: ""
           top_signame: pwrmgr_aon_wakeups
-          index: 1
+          index: 2
         }
         {
           name: usb_out_of_rst
@@ -2801,7 +2872,7 @@
           inst_name: aon_timer_aon
           package: ""
           top_signame: pwrmgr_aon_wakeups
-          index: 2
+          index: 3
         }
         {
           name: aon_timer_rst_req
@@ -5416,6 +5487,7 @@
       ]
       pwrmgr_aon.wakeups:
       [
+        adc_ctrl_aon.debug_cable_wakeup
         pinmux_aon.aon_wkup_req
         pinmux_aon.usb_wkup_req
         aon_timer_aon.aon_timer_wkup_req
@@ -5588,6 +5660,10 @@
       [
         peri.tl_aon_timer_aon
       ]
+      adc_ctrl_aon.tl:
+      [
+        peri.tl_adc_ctrl_aon
+      ]
     }
     top:
     [
@@ -5602,6 +5678,7 @@
     ]
     external:
     {
+      adc_ctrl_aon.adc: adc
       ast.edn: ""
       ast.lc_dft_en: ""
       ast.ram_1p_cfg: ram_1p_cfg
@@ -6340,6 +6417,7 @@
           ast
           sram_ctrl_ret_aon
           aon_timer_aon
+          adc_ctrl_aon
         ]
       }
       nodes:
@@ -6806,6 +6884,24 @@
           pipeline_byp: "true"
         }
         {
+          name: adc_ctrl_aon
+          type: device
+          clock: clk_peri_i
+          reset: rst_peri_ni
+          pipeline: "false"
+          inst_type: dcd
+          addr_range:
+          [
+            {
+              base_addr: 0x40440000
+              size_byte: 0x1000
+            }
+          ]
+          xbar: false
+          stub: false
+          pipeline_byp: "true"
+        }
+        {
           name: ast
           type: device
           clock: clk_peri_i
@@ -7138,6 +7234,18 @@
           inst_name: peri
           default: ""
           top_signame: aon_timer_aon_tl
+          index: -1
+        }
+        {
+          name: tl_adc_ctrl_aon
+          struct: tl
+          package: tlul_pkg
+          type: req_rsp
+          act: req
+          width: 1
+          inst_name: peri
+          default: ""
+          top_signame: adc_ctrl_aon_tl
           index: -1
         }
         {
@@ -7695,6 +7803,11 @@
         aon_peri
         usb_peri
       ]
+      adc_ctrl_aon:
+      [
+        io_div4_peri
+        aon_peri
+      ]
       ast:
       [
         io_div4_secure
@@ -7715,6 +7828,11 @@
   }
   wakeups:
   [
+    {
+      name: debug_cable_wakeup
+      width: "1"
+      module: adc_ctrl_aon
+    }
     {
       name: aon_wkup_req
       width: "1"
@@ -7758,6 +7876,7 @@
     otp_ctrl
     alert_handler
     pwrmgr_aon
+    adc_ctrl_aon
     aon_timer_aon
     flash_ctrl
     hmac
@@ -8480,6 +8599,12 @@
       module_name: pwrmgr_aon
     }
     {
+      name: adc_ctrl_aon_debug_cable
+      width: 1
+      type: interrupt
+      module_name: adc_ctrl_aon
+    }
+    {
       name: aon_timer_aon_wkup_timer_expired
       width: 1
       type: interrupt
@@ -8867,6 +8992,11 @@
         sys_io_div4
         sys_aon
         usb
+      ]
+      adc_ctrl_aon:
+      [
+        sys_io_div4
+        sys_aon
       ]
       ast:
       [
@@ -9998,7 +10128,7 @@
         struct: logic
         type: uni
         act: rcv
-        width: 3
+        width: 4
         inst_name: pwrmgr_aon
         default: ""
         end_idx: -1
@@ -10293,6 +10423,44 @@
         index: -1
       }
       {
+        name: adc
+        struct: adc_ast
+        package: ast_pkg
+        type: req_rsp
+        act: req
+        width: 1
+        inst_name: adc_ctrl_aon
+        default: ""
+        external: true
+        top_signame: adc
+        index: -1
+      }
+      {
+        name: debug_cable_wakeup
+        struct: logic
+        type: uni
+        act: req
+        width: 1
+        inst_name: adc_ctrl_aon
+        default: ""
+        package: ""
+        top_signame: pwrmgr_aon_wakeups
+        index: 0
+      }
+      {
+        name: tl
+        struct: tl
+        package: tlul_pkg
+        type: req_rsp
+        act: rsp
+        width: 1
+        inst_name: adc_ctrl_aon
+        default: ""
+        end_idx: -1
+        top_signame: adc_ctrl_aon_tl
+        index: -1
+      }
+      {
         name: lc_hw_debug_en
         struct: lc_tx
         package: lc_ctrl_pkg
@@ -10399,7 +10567,7 @@
         inst_name: pinmux_aon
         package: ""
         top_signame: pwrmgr_aon_wakeups
-        index: 0
+        index: 1
       }
       {
         name: usb_wkup_req
@@ -10411,7 +10579,7 @@
         inst_name: pinmux_aon
         package: ""
         top_signame: pwrmgr_aon_wakeups
-        index: 1
+        index: 2
       }
       {
         name: usb_out_of_rst
@@ -10498,7 +10666,7 @@
         inst_name: aon_timer_aon
         package: ""
         top_signame: pwrmgr_aon_wakeups
-        index: 2
+        index: 3
       }
       {
         name: aon_timer_rst_req
@@ -12350,6 +12518,18 @@
         index: -1
       }
       {
+        name: tl_adc_ctrl_aon
+        struct: tl
+        package: tlul_pkg
+        type: req_rsp
+        act: req
+        width: 1
+        inst_name: peri
+        default: ""
+        top_signame: adc_ctrl_aon_tl
+        index: -1
+      }
+      {
         name: tl_ast
         struct: tl
         package: tlul_pkg
@@ -12498,6 +12678,30 @@
     ]
     external:
     [
+      {
+        package: ast_pkg
+        struct: adc_ast_req
+        signame: adc_req_o
+        width: 1
+        type: req_rsp
+        default: ""
+        direction: out
+        conn_type: false
+        index: -1
+        netname: adc_req
+      }
+      {
+        package: ast_pkg
+        struct: adc_ast_rsp
+        signame: adc_rsp_i
+        width: 1
+        type: req_rsp
+        default: ""
+        direction: in
+        conn_type: false
+        index: -1
+        netname: adc_rsp
+      }
       {
         package: edn_pkg
         struct: edn_req
@@ -13806,7 +14010,7 @@
         package: ""
         struct: logic
         signame: pwrmgr_aon_wakeups
-        width: 3
+        width: 4
         type: uni
         end_idx: -1
         act: rcv
@@ -14719,6 +14923,28 @@
         package: tlul_pkg
         struct: tl_d2h
         signame: aon_timer_aon_tl_rsp
+        width: 1
+        type: req_rsp
+        end_idx: -1
+        act: rsp
+        suffix: rsp
+        default: ""
+      }
+      {
+        package: tlul_pkg
+        struct: tl_h2d
+        signame: adc_ctrl_aon_tl_req
+        width: 1
+        type: req_rsp
+        end_idx: -1
+        act: rsp
+        suffix: req
+        default: ""
+      }
+      {
+        package: tlul_pkg
+        struct: tl_d2h
+        signame: adc_ctrl_aon_tl_rsp
         width: 1
         type: req_rsp
         end_idx: -1

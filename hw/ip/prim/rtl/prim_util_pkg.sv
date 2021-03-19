@@ -100,7 +100,7 @@ package prim_util_pkg;
     integer remainder;
     integer quotient;
     quotient = dividend / divisor;
-    remainder = dividend & divisor;
+    remainder = dividend % divisor;
     if (remainder > 0) begin
       quotient = quotient + 1;
     end

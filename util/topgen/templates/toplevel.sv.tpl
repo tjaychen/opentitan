@@ -47,9 +47,13 @@ module top_${top["name"]} #(
   % if not lib.is_inst(m):
 <% continue %>
   % endif
+  // parameters for ${m['name']}
   % for p_exp in filter(lambda p: p.get("expose") == "true", m["param_list"]):
-  parameter ${p_exp["type"]}
-    ${p_exp["name_top"]} = ${lib.param_value(p_exp, m["param_decl"])},
+    % if not p_exp["type"]:
+  parameter ${p_exp["name_top"]} = ${lib.param_value(p_exp, m["param_decl"])},
+    % else:
+  parameter ${p_exp["type"]} ${p_exp["name_top"]} = ${lib.param_value(p_exp, m["param_decl"])},
+    % endif
   % endfor
 % endfor
 
@@ -172,16 +176,6 @@ module top_${top["name"]} #(
     % endfor
 % endfor
 
-
-<% add_spaces = " " * len(str((interrupt_num-1).bit_length()-1)) %>
-  logic [0:0]${add_spaces}irq_plic;
-  logic [0:0]${add_spaces}msip;
-  logic [${(interrupt_num-1).bit_length()-1}:0] irq_id[1];
-  logic [${(interrupt_num-1).bit_length()-1}:0] unused_irq_id[1];
-
-  // this avoids lint errors
-  assign unused_irq_id = irq_id;
-
   // Alert list
   prim_alert_pkg::alert_tx_t [alert_pkg::NAlerts-1:0]  alert_tx;
   prim_alert_pkg::alert_rx_t [alert_pkg::NAlerts-1:0]  alert_rx;
@@ -274,70 +268,18 @@ module top_${top["name"]} #(
   assign unused_d${v.lower()}_rst_${k} = ${lib.get_reset_path(k, v, top['resets'])};
 % endfor
 
-  // processor core
-  rv_core_ibex #(
-    .PMPEnable                (1),
-    .PMPGranularity           (0), // 2^(PMPGranularity+2) == 4 byte granularity
-    .PMPNumRegions            (16),
-    .MHPMCounterNum           (10),
-    .MHPMCounterWidth         (32),
-    .RV32E                    (0),
-    .RV32M                    (ibex_pkg::RV32MSingleCycle),
-    .RV32B                    (ibex_pkg::RV32BNone),
-    .RegFile                  (IbexRegFile),
-    .BranchTargetALU          (1),
-    .WritebackStage           (1),
-    .ICache                   (IbexICache),
-    .ICacheECC                (1),
-    .BranchPredictor          (0),
-    .DbgTriggerEn             (1),
-    .SecureIbex               (SecureIbex),
-    .DmHaltAddr               (ADDR_SPACE_RV_DM__ROM + dm::HaltAddress[31:0]),
-    .DmExceptionAddr          (ADDR_SPACE_RV_DM__ROM + dm::ExceptionAddress[31:0]),
-    .PipeLine                 (IbexPipeLine)
-  ) u_rv_core_ibex (
-    // clock and reset
-    .clk_i                (${cpu_clk}),
-    .rst_ni               (${cpu_rst}[rstmgr_pkg::Domain0Sel]),
-    .clk_esc_i            (${esc_clk}),
-    .rst_esc_ni           (${esc_rst}[rstmgr_pkg::Domain0Sel]),
-    // reset feedback to the clock manager
-    .rst_cpu_n_o          (rstmgr_aon_rst_cpu_n),
-    .ram_cfg_i            (ast_ram_1p_cfg),
-    // static pinning
-    .hart_id_i            (32'b0),
-    .boot_addr_i          (ADDR_SPACE_ROM_CTRL__ROM),
-    // TL-UL buses
-    .tl_i_o               (main_tl_corei_req),
-    .tl_i_i               (main_tl_corei_rsp),
-    .tl_d_o               (main_tl_cored_req),
-    .tl_d_i               (main_tl_cored_rsp),
-    // interrupts
-    .irq_software_i       (msip),
-    .irq_timer_i          (intr_rv_timer_timer_expired_0_0),
-    .irq_external_i       (irq_plic),
-    // escalation input from alert handler (NMI)
-    .esc_tx_i             (alert_handler_esc_tx[0]),
-    .esc_rx_o             (alert_handler_esc_rx[0]),
-    // debug interface
-    .debug_req_i          (rv_dm_debug_req),
-    // crash dump interface
-    .crash_dump_o         (rv_core_ibex_crash_dump),
-    // CPU control signals
-    .lc_cpu_en_i          (lc_ctrl_lc_cpu_en),
-    .pwrmgr_cpu_en_i      (pwrmgr_aon_fetch_en),
-    .core_sleep_o         (pwrmgr_aon_pwr_cpu.core_sleeping),
-    // alert hooksup
-    .fatal_intg_event_o   (rv_core_ibex_fatal_intg_event),
-    .fatal_core_event_o   (rv_core_ibex_fatal_core_event),
-    .recov_core_event_o   (rv_core_ibex_recov_core_event),
-    // address translation configuration
-    .ibus_region_cfg_i    (rv_core_ibex_peri_ibus_region_cfg),
-    .dbus_region_cfg_i    (rv_core_ibex_peri_dbus_region_cfg),
-    // dft bypass
-    .scan_rst_ni,
-    .scanmode_i
-  );
+  // ibex specific assignments
+  // TODO: This should be further automated in the future.
+  assign rv_core_ibex_irq_timer = intr_rv_timer_timer_expired_0_0;
+  assign rv_core_ibex_hart_id = '0;
+
+  ## Not all top levels have a rom controller.
+  ## For those that do not, reference the ROM directly.
+% if lib.is_rom_ctrl(top["module"]):
+  assign rv_core_ibex_boot_addr = ADDR_SPACE_ROM_CTRL__ROM;
+% else:
+  assign rv_core_ibex_boot_addr = ADDR_SPACE_ROM;
+% endif
 
   // Struct breakout module tool-inserted DFT TAP signals
   pinmux_jtag_breakout u_dft_tap_breakout (
@@ -674,11 +616,7 @@ slice = str(alert_idx+w-1) + ":" + str(alert_idx)
       % endfor
     % endif
     % if m["type"] == "rv_plic":
-
       .intr_src_i (intr_vector),
-      .irq_o      (irq_plic),
-      .irq_id_o   (irq_id),
-      .msip_o     (msip),
     % endif
     % if m["type"] == "pinmux":
 

@@ -496,6 +496,16 @@ def make_bit_concatenation(sig_name: str,
     acc += ['\n', ' ' * end_indent, '}']
     return ''.join(acc)
 
+def is_rom_ctrl (modules):
+    '''Return true if rom_ctrl (and thus boot-up rom integrity checking)
+       exists in the design
+    '''
+    for m in modules:
+        if m['type'] == 'rom_ctrl':
+            return True
+
+    return False
+
 
 def param_value(ip_param, module_params_decl):
     '''Return param value of an exposed parameter.

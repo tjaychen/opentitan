@@ -48,7 +48,8 @@ module top_${top["name"]} #(
 <% continue %>
   % endif
   % for p_exp in filter(lambda p: p.get("expose") == "true", m["param_list"]):
-  parameter ${p_exp["type"]} ${p_exp["name_top"]} = ${lib.param_value(p_exp, m["param_decl"])},
+  parameter ${p_exp["type"]}
+    ${p_exp["name_top"]} = ${lib.param_value(p_exp, m["param_decl"])},
   % endfor
 % endfor
 

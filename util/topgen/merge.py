@@ -68,6 +68,11 @@ def elaborate_instance(instance, block: IpBlock):
         - base_addr (this is reflected in base_addrs)
 
     """
+
+    # create an empty dict if nothing is there
+    if "param_decl" not in instance:
+        instance["param_decl"] = {}
+
     mod_name = instance["name"]
 
     # param_list
@@ -118,6 +123,13 @@ def elaborate_instance(instance, block: IpBlock):
         new_params.append(new_param)
 
     instance["param_list"] = new_params
+
+    # for each module declaration, check to see that the parameter actually exists
+    # and can be set
+    for decl in instance["param_decl"].keys():
+        if not any(decl in param['name'] for param in instance["param_list"]):
+            log.error("{} is not a valid parameter of {} that can be "
+                      "set from top level".format(decl, block.name))
 
     # These objects get added-to in place by code in intermodule.py, so we have
     # to convert and copy them here.

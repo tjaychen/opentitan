@@ -495,3 +495,15 @@ def make_bit_concatenation(sig_name: str,
         acc += [',', item_indent, item]
     acc += ['\n', ' ' * end_indent, '}']
     return ''.join(acc)
+
+
+def param_value(ip_param, module_params_decl):
+    '''Return param value of an exposed parameter.
+
+       If there is no explicitly declared value under module, use default.
+       If there is an explicitly declared value, use that instead.
+
+    '''
+
+    mod_val = module_params_decl.get(ip_param["name"])
+    return mod_val if mod_val is not None else ip_param["default"]
